@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,16 +26,17 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @PreAuthorize("permitAll")
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest authRequest) {
+    public ResponseEntity<AuthenticationResponse> login
+            (@RequestBody @Valid AuthenticationRequest authRequest) {
         System.out.println("Diezpeso");
 
         AuthenticationResponse jwtDto = authenticationServiceImp.login(authRequest);
         return ResponseEntity.ok(jwtDto);
     }
 
-
-
+    @PreAuthorize("permitAll")
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
         List<User> users = this.userServiceImp.getUsers();
@@ -42,12 +44,13 @@ public class AuthController {
             return ResponseEntity.ok(users);
         }
         return ResponseEntity.notFound().build();
-    }/*
+    }
+    @PreAuthorize("permitAll")
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody @Valid User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 this.userServiceImp.newUser(user)
         );
-    }*/
+    }
 }

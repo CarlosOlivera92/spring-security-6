@@ -16,16 +16,13 @@ import org.springframework.stereotype.Component;
 public class SecurityBeansInyector {
 
     @Autowired
-    private AuthenticationConfiguration authenticationConfiguration;
-
-    @Autowired
     private UserServiceImp userServiceImp;
 
     // Definición de un bean llamado "authenticationManager"
     @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         // Retorna un AuthenticationManager obtenido desde authenticationConfiguration
-        return this.authenticationConfiguration.getAuthenticationManager();
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     // Definición de un bean llamado "authenticationProvider"
@@ -34,7 +31,7 @@ public class SecurityBeansInyector {
         // Creación de un objeto DaoAuthenticationProvider
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         // Configuración del servicio de usuario y codificador de contraseñas para el proveedor
-        provider.setUserDetailsService(userDetailsService(userServiceImp));
+        provider.setUserDetailsService(userDetailsService());
         provider.setPasswordEncoder(passwordEncoder());
         // Retorna el proveedor configurado
         return provider;
@@ -49,10 +46,10 @@ public class SecurityBeansInyector {
 
     // Definición de un bean llamado "userDetailsService"
     @Bean
-    public UserDetailsService userDetailsService(UserServiceImp userServiceImp) {
+    public UserDetailsService userDetailsService() {
         // Retorna un UserDetailsService personalizado que obtiene usuarios por nombre de usuario
         return username -> {
-            return this.userServiceImp.getByUsername(username)
+            return userServiceImp.findByUsername(username)
                     .orElseThrow( () -> new RuntimeException("User not found"));
         };
     }

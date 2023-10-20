@@ -10,6 +10,7 @@ public interface UserService {
     User getUserById(Long id);
     User newUser(User user);
     User updateUser(Long id, User user);
-    Optional<User> getByUsername(String username);
+    Optional<User> findByUsername(String username);
+
     void deleteUser(Long id);
 }

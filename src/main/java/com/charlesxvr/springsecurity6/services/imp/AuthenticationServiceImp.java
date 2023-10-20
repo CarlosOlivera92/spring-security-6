@@ -20,12 +20,10 @@ public class AuthenticationServiceImp implements AuthenticationService {
     private UserServiceImp userServiceImp;
     @Autowired
     private JwtServiceImp jwtServiceImp;
-    @Override
     public AuthenticationResponse login(AuthenticationRequest authenticationRequest) {
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword());
         authenticationManager.authenticate(authToken);
-        User user = userServiceImp.getByUsername(authenticationRequest.getUsername())
-                .orElseThrow( () -> new RuntimeException("User not found"));
+        User user = userServiceImp.findByUsername(authenticationRequest.getUsername()).get();
         String jwt = jwtServiceImp.generateToken(user, generateExtraClaims(user));
         return new AuthenticationResponse(jwt);
     }
@@ -33,6 +31,7 @@ public class AuthenticationServiceImp implements AuthenticationService {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("name", user.getName());
         extraClaims.put("role", user.getRole());
+        extraClaims.put("permissions", user.getAuthorities());
         return extraClaims;
     }
 }

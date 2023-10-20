@@ -20,6 +20,6 @@ public class Product {
     private Long id;
     @NotBlank
     private String name;
-    @NotBlank @DecimalMin(value = "0.01")
+    @DecimalMin(value = "0.01")
     private BigDecimal price;
 }
